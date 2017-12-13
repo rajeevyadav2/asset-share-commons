@@ -27,8 +27,10 @@
 	}
 </style>
 
-<form method="post"
-	  action="#URL-to-contac-sheet-download"
+<!-- This Form should submit to the AEM endpoint that genreates the Contact Sheet -->
+<form method="get"
+	  target="_blank"
+	  action="https://adobe-marketing-cloud.github.io/asset-share-commons/"
 	  data-asset-share-id="contact-sheet-modal"
 	  class="ui form modal cmp-modal-contact-sheet cmp-modal">
 
@@ -42,7 +44,9 @@
 		<div class="ui grid cmp-content--form"
 			 data-asset-share-id="contact-sheet-content">
 
-			Contact Sheet View
+Clicking "Download Contact Sheet" takes you to the ASC home page, but this is just an example. Point this form an AEM HTTP end-points that generates a Contact Sheet.
+
+This will also require creating a Sling Model for this modal that reads the path query parameter and writes them back to this modal as form fields that get submitted to th HTTP End-points.
 
 		</div>
 	</div>
@@ -54,7 +58,7 @@
 		</div>
 		<button data-asset-share-id="submit-share"
 				type="submit"
-				class="ui primary submit right labeled icon button">
+				class="ui positive primary submit right labeled icon button">
 
 			Download Contact Sheet
 
