@@ -22,69 +22,44 @@ var MyAssetShare = MyAssetShare || {};
 MyAssetShare.SemanticUI = MyAssetShare.SemanticUI || {};
 MyAssetShare.SemanticUI.Modals = MyAssetShare.SemanticUI.Modals || {};
 
+
+/* This implementation doesnt have to be a 'new' cart modal, since we can just draft on the OOTB CartModal JS implementation.
+   All this needs to do is attach an event listener to the View Contact Sheet button and make a call and pass the asset paths to it.
+ */
 jQuery((function($, ns, cart, semanticModal, contactSheetModal) {
     "use strict";
-    AssetShare.SemanticUI.Modals.CartWithContactSheetModal = (function () {
-        var CART_URL = ns.Data.val("cart-url"),
-            CART_MODAL_ID = "cart-modal";
 
-        function asFormData() {
-            var formData = new ns.FormData();
+    /* Copy over method from cart.js as its not exposed via the modal */
+    /* We need to collect this data from the `cart` in order to pass it to the Contact Sheet Modal via the line: semanticModal.show([contactSheetModal.modal(asFormData())]);
+ */
+    function asFormData() {
+        var formData = new ns.FormData();
 
-            cart.paths().forEach(function (path) {
-                formData.add("path", path);
-            });
+        cart.paths().forEach(function (path) {
+            formData.add("path", path);
+        });
 
-            // Set this to prevent odd placeholder injection when running on AEM Author; This will be a NOOP
-            formData.add("wcmmode", "disabled");
+        // Set this to prevent odd placeholder injection when running on AEM Author; This will be a NOOP
+        formData.add("wcmmode", "disabled");
 
-            return formData;
-        }
+        return formData;
+    }
 
-        function serialize() {
-            return asFormData().serialize();
-        }
+    /** REGISTER NEW CONTACT SHEET EVENTS **/
 
-        function getId() {
-            return CART_MODAL_ID;
-        }
+    $((function registerEvents() {
+        /* Since the OOTB cart.js is loaded w/ and it binds all the events, etc. we can just handle our new click and let the OOTB CartModal handle the other actions */
+        /* This requires the other data-asset-share-id's in the cart-with-contact-sheet to match for the event binding in cart.js */
+        $("body").on("click", ns.Elements.selector(["view-contact-sheet"]), function(e) {
 
-        function getModal() {
-            return {
-                id: CART_MODAL_ID,
-                url: CART_URL,
-                data: serialize(),
-                options: {}
-            };
-        }
-
-        function show(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            semanticModal.show([getModal()]);
-        }
-
-        function viewContactSheet(e) {
             e.preventDefault();
             e.stopPropagation();
 
             semanticModal.show([contactSheetModal.modal(asFormData())]);
-        }
+        });
 
-        /** REGISTER EVENTS **/
+    }()));
 
-        $((function registerEvents() {
-            /* Since the OOTB cart.js is loaded w/ and it binds all the events, etc. we can just handle our new click and let the OOTB CartModal handle the other actions */
-            /* This requires the other data-asset-share-id's in the cart-with-contact-sheet to match for the event binding in cart.js */
-            $("body").on("click", ns.Elements.selector(["view-contact-sheet"]), viewContactSheet);
-
-        }()));
-
-        return {
-            show: show
-        };
-    }());
 }(jQuery,
     AssetShare,
     AssetShare.Cart,
